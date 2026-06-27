@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/mxSharp.Demo/mxSharp.Demo.csproj" />
+    <Project Path="src/mxSharp/mxSharp.csproj" />
+  </Folder>
+</Solution>
