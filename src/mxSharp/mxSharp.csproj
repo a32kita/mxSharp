@@ -12,4 +12,10 @@
     <PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Protobuf Include="external/mixi2-api/proto/**/*.proto"
+            GrpcServices="Client"
+            ProtoRoot="external/mixi2-api/proto" />
+  </ItemGroup>
+
 </Project>
