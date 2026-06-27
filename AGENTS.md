@@ -10,6 +10,24 @@
   - HTTP for OAuth and auxiliary endpoints
   - gRPC for application API calls
 
+## External dependencies in repository
+
+- Official mixi2 proto definitions are included as a git submodule:
+  - `external/mixi2-api`
+- Do not manually rewrite upstream proto files under:
+  - `S:\Public Development\mxSharp\external\mixi2-api`
+
+## Generated code layout
+
+- C# protobuf/gRPC generated files are emitted into:
+  - `S:\Public Development\mxSharp\src\mxSharp\Generated`
+- Generated files are build artifacts backed by upstream `.proto` files.
+- Do not hand-edit generated files unless there is a temporary local debugging need.
+- Preferred change flow:
+  1. Update `.proto` inputs or project generation settings.
+  2. Rebuild.
+  3. Consume generated types from handwritten wrapper classes.
+
 ## Current architecture
 
 ### Root client
@@ -19,6 +37,7 @@
   - Owns one `GrpcChannel`
   - Implements `IDisposable`
   - Disposes both channel and `HttpClient`
+  - Exposes HTTP, OAuth, token provider, and posting client entry points
 
 ### HTTP layer
 
@@ -27,6 +46,25 @@
   - JSON and form POST helpers
   - Throws `MixiException` on non-success responses
 
+### Proto / gRPC integration
+
+- `src/mxSharp/mxSharp.csproj`
+  - Uses `Grpc.Tools` for code generation
+  - Uses `Protobuf` items with split configuration:
+    - `const/v1` => `GrpcServices="None"`
+    - `model/v1` => `GrpcServices="None"`
+    - `service/application_api/v1` => `GrpcServices="Client"`
+    - `service/application_stream/v1` => `GrpcServices="Client"`
+    - `service/client_endpoint/v1` => `GrpcServices="None"`
+  - Uses `CompileOutputs="false"` and explicit generated output directory behavior
+  - Uses `Protobuf_OutputPath=Generated`
+
+- Important generated namespaces currently in use:
+  - `Social.Mixi.Application.Service.ApplicationApi.V1`
+  - `Social.Mixi.Application.Service.ApplicationStream.V1`
+  - `Social.Mixi.Application.Model.V1`
+  - `Social.Mixi.Application.Const.V1`
+
 ### Authentication
 
 - `MxSharpOAuthClient`
@@ -34,18 +72,46 @@
 - `MxSharpTokenProvider`
   - Caches tokens
   - Refreshes them on demand
+  - Supplies bearer tokens for gRPC metadata
 
 ### Posting layer
 
 - `MxSharpGrpcPostClient`
   - Wraps generated `ApplicationService.ApplicationServiceClient`
   - Currently implements `CreatePost` using the official generated gRPC client
+  - Maps `RpcException` to `MixiException`
+
+### Demo app
+
+- `MxSharp.Demo`
+  - Interactive console app
+  - Prompts for OAuth token URL, gRPC endpoint, client ID, client secret, and optional scope
+  - Requests token and calls `CreatePostAsync`
 
 ## Error handling rule
 
 - API-originated failures must throw `MixiException`
 - `MixiException.Message` format must be:
   - `API Error: xxxxxx`
+
+## Current implemented mixi2 API surface
+
+- Implemented:
+  - OAuth 2.0 client credentials token acquisition
+  - `CreatePost`
+
+- Proto-confirmed but not yet wrapped in handwritten public API:
+  - `DeletePost`
+  - `GetUsers`
+  - `GetPosts`
+  - `GetCommunities`
+  - `InitiatePostMediaUpload`
+  - `GetPostMediaStatus`
+  - `SendChatMessage`
+  - `GetStamps`
+  - `AddStampToPost`
+  - `SendDirectMessageToCommunityMember`
+  - `SubscribeEvents`
 
 ## Coding guidance
 
@@ -54,6 +120,24 @@
 - Prefer small focused classes.
 - Preserve the shared `HttpClient` ownership model.
 - Preserve root-client disposal semantics.
+- Prefer wrapping generated types instead of leaking them broadly through the public API.
+- If adding new wrappers, use the existing token provider and attach bearer tokens through gRPC `Metadata`.
+- If API-originated errors surface as `RpcException`, convert them to `MixiException`.
+- Avoid editing generated code directly; adjust proto generation inputs or wrapper code instead.
+
+## Validation guidance for coding agents
+
+- After any change to proto generation or wrapper logic, run:
+  - `dotnet build S:\Public Development\mxSharp\mxSharp.slnx -c Release`
+- If generation-related errors occur, inspect:
+  - `S:\Public Development\mxSharp\src\mxSharp\mxSharp.csproj`
+  - `S:\Public Development\mxSharp\src\mxSharp\Generated`
+  - `S:\Public Development\mxSharp\external\mixi2-api\proto`
+- If runtime posting issues occur, verify:
+  - OAuth token endpoint
+  - gRPC endpoint
+  - client credentials
+  - required scopes / app permissions
 
 ## Future integration steps
 
