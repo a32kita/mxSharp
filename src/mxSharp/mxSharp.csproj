@@ -4,18 +4,42 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Protobuf_OutputPath>Generated</Protobuf_OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.Tools" Version="2.80.0" PrivateAssets="All" />
     <PackageReference Include="Google.Protobuf" Version="3.35.1" />
     <PackageReference Include="Grpc.Core.Api" Version="2.80.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="external/mixi2-api/proto/**/*.proto"
-            GrpcServices="Client"
-            ProtoRoot="external/mixi2-api/proto" />
+    <Protobuf Include="..\..\external\mixi2-api\proto\social\mixi\application\const\v1\*.proto"
+              GrpcServices="None"
+              ProtoRoot="..\..\external\mixi2-api\proto"
+              OutputDir="$(Protobuf_OutputPath)"
+              CompileOutputs="false" />
+    <Protobuf Include="..\..\external\mixi2-api\proto\social\mixi\application\model\v1\*.proto"
+              GrpcServices="None"
+              ProtoRoot="..\..\external\mixi2-api\proto"
+              OutputDir="$(Protobuf_OutputPath)"
+              CompileOutputs="false" />
+    <Protobuf Include="..\..\external\mixi2-api\proto\social\mixi\application\service\application_api\v1\*.proto"
+              GrpcServices="Client"
+              ProtoRoot="..\..\external\mixi2-api\proto"
+              OutputDir="$(Protobuf_OutputPath)"
+              CompileOutputs="false" />
+    <Protobuf Include="..\..\external\mixi2-api\proto\social\mixi\application\service\application_stream\v1\*.proto"
+              GrpcServices="Client"
+              ProtoRoot="..\..\external\mixi2-api\proto"
+              OutputDir="$(Protobuf_OutputPath)"
+              CompileOutputs="false" />
+    <Protobuf Include="..\..\external\mixi2-api\proto\social\mixi\application\service\client_endpoint\v1\*.proto"
+              GrpcServices="None"
+              ProtoRoot="..\..\external\mixi2-api\proto"
+              OutputDir="$(Protobuf_OutputPath)"
+              CompileOutputs="false" />
   </ItemGroup>
 
 </Project>

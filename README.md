@@ -20,11 +20,14 @@ mxSharp is a .NET 8 client library scaffold for the mixi2 Developer Platform.
 - Shared `HttpClient` owned by `MxSharpClient`
 - Shared `GrpcChannel` owned by `MxSharpClient`
 - Common HTTP GET/POST infrastructure
+- Official mixi2 `.proto` files integrated via submodule
+- Generated C# protobuf and gRPC client code via `Grpc.Tools`
+- `CreatePost` gRPC call wired to generated `ApplicationServiceClient`
 - `MixiException` for API error handling
 - Demo console application for interactive authentication and posting flow
 
 > Note
-> The current post API implementation is a placeholder until the official mixi2 `.proto` files are integrated and generated C# gRPC clients are added.
+> Posting is now wired to the generated mixi2 gRPC client. Additional API areas such as media upload, delete, user lookup, and event streaming are still pending higher-level wrappers.
 
 ## Basic usage
 
@@ -84,8 +87,7 @@ dotnet run --project S:\Public Development\mxSharp\src\mxSharp.Demo\mxSharp.Demo
 
 ## Planned next steps
 
-- Integrate official mixi2 `.proto` definitions
-- Generate C# gRPC client types
-- Replace placeholder post implementation with actual RPC calls
-- Add streaming support
-- Add richer response models
+- Add media upload helper using `InitiatePostMediaUpload` and HTTP upload flow
+- Add delete post, user lookup, and direct message helpers
+- Add streaming support wrapper around `SubscribeEvents`
+- Add richer response/domain models and mapping helpers

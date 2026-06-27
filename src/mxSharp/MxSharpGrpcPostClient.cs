@@ -3,17 +3,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Social.Mixi.Application.Service.ApplicationApi.V1;
 
 namespace MxSharp;
 
 public sealed class MxSharpGrpcPostClient
 {
-    private readonly GrpcChannel _channel;
+    private readonly ApplicationService.ApplicationServiceClient _client;
     private readonly IMxSharpAccessTokenProvider _tokenProvider;
 
     public MxSharpGrpcPostClient(GrpcChannel channel, IMxSharpAccessTokenProvider tokenProvider)
     {
-        _channel = channel;
+        _client = new ApplicationService.ApplicationServiceClient(channel);
         _tokenProvider = tokenProvider;
     }
 
@@ -32,19 +33,22 @@ public sealed class MxSharpGrpcPostClient
 
         try
         {
-            // This method is a placeholder until generated proto clients are integrated.
-            // The current implementation verifies authentication and channel plumbing only.
-            _ = headers;
-            _ = _channel;
+            var grpcRequest = new Social.Mixi.Application.Service.ApplicationApi.V1.CreatePostRequest
+            {
+                Text = request.Text,
+            };
+
+            var grpcResponse = await _client.CreatePostAsync(grpcRequest, headers, cancellationToken: cancellationToken).ResponseAsync.ConfigureAwait(false);
 
             return new CreatePostResponse
             {
-                RawResponse = $"Queued placeholder post request: {request.Text}",
+                PostId = grpcResponse.Post?.PostId,
+                RawResponse = grpcResponse.Post?.Text,
             };
         }
         catch (RpcException ex)
         {
-            throw new MixiException(ex.Status.Detail, ex);
+            throw new MixiException(string.IsNullOrWhiteSpace(ex.Status.Detail) ? ex.Status.StatusCode.ToString() : ex.Status.Detail, ex);
         }
     }
 }

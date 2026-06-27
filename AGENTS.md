@@ -38,8 +38,8 @@
 ### Posting layer
 
 - `MxSharpGrpcPostClient`
-  - Placeholder implementation
-  - Intended replacement point once official generated gRPC clients are added
+  - Wraps generated `ApplicationService.ApplicationServiceClient`
+  - Currently implements `CreatePost` using the official generated gRPC client
 
 ## Error handling rule
 
@@ -57,8 +57,8 @@
 
 ## Future integration steps
 
-1. Add official mixi2 `.proto` files into the repository.
-2. Add `Grpc.Tools` and generate C# clients.
-3. Replace placeholder gRPC posting logic with actual generated client usage.
-4. Add streaming client support using the same token provider and channel.
-5. Expand response and domain models once actual RPC schemas are available.
+1. Add media upload helper and direct upload flow.
+2. Add delete post, get users, and DM wrappers.
+3. Add streaming client support using the same token provider and channel.
+4. Expand response and domain models once actual RPC schemas are available.
+5. Consider a dedicated internal layer for generated-type to public-model mapping.
