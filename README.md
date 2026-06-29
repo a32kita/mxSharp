@@ -22,7 +22,8 @@ mxSharp is a .NET 8 client library scaffold for the mixi2 Developer Platform.
 - Common HTTP GET/POST infrastructure
 - Official mixi2 `.proto` files integrated via submodule
 - Generated C# protobuf and gRPC client code via `Grpc.Tools`
-- `CreatePost` gRPC call wired to generated `ApplicationServiceClient`
+- `CreatePost`, `GetPosts`, and `DeletePost` gRPC calls wired to generated `ApplicationServiceClient`
+- Public handwritten `Post` read model used for post retrieval results
 - `MixiException` for API error handling
 - Demo console application for interactive authentication and posting flow
 
@@ -34,7 +35,7 @@ mxSharp is a .NET 8 client library scaffold for the mixi2 Developer Platform.
 - When running the demo or configuring the client, always use the endpoint values currently shown in the Developer Portal for your application.
 
 > Note
-> Posting is now wired to the generated mixi2 gRPC client. Additional API areas such as media upload, delete, user lookup, and event streaming are still pending higher-level wrappers.
+> Posting is now wired to the generated mixi2 gRPC client. Higher-level wrappers for `CreatePost`, `GetPosts`, and `DeletePost` are implemented. Additional API areas such as media upload, user lookup, and event streaming are still pending.
 
 ## Basic usage
 
@@ -57,6 +58,11 @@ var token = await client.OAuth.GetClientCredentialsTokenAsync();
 var response = await client.Posts.CreatePostAsync(new CreatePostRequest
 {
     Text = "Hello from mxSharp",
+});
+
+var posts = await client.Posts.GetPostsAsync(new GetPostsRequest
+{
+    PostIds = { response.PostId! },
 });
 ```
 
@@ -86,6 +92,8 @@ catch (MixiException ex)
 4. Requests an access token
 5. Prompts for post text and sends one post
 
+The demo currently focuses on create-post flow only, but the library also exposes `GetPostsAsync` and `DeletePostAsync` wrappers.
+
 The demo intentionally asks for the token URL and gRPC endpoint instead of hardcoding them. As of 2026-06-29, this repository treats those values as configuration that should be copied from the mixi2 Developer Portal for the target application.
 
 > Note
@@ -100,6 +108,6 @@ dotnet run --project S:\Public Development\mxSharp\src\mxSharp.Demo\mxSharp.Demo
 ## Planned next steps
 
 - Add media upload helper using `InitiatePostMediaUpload` and HTTP upload flow
-- Add delete post, user lookup, and direct message helpers
+- Add user lookup and direct message helpers
 - Add streaming support wrapper around `SubscribeEvents`
-- Add richer response/domain models and mapping helpers
+- Expand post/domain models and mapping helpers

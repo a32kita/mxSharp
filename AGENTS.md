@@ -78,7 +78,8 @@
 
 - `MxSharpGrpcPostClient`
   - Wraps generated `ApplicationService.ApplicationServiceClient`
-  - Currently implements `CreatePost` using the official generated gRPC client
+  - Currently implements `CreatePost`, `GetPosts`, and `DeletePost` using the official generated gRPC client
+  - Uses handwritten public request/response models and a handwritten `Post` read model
   - Maps `RpcException` to `MixiException`
 
 ### Demo app
@@ -106,11 +107,11 @@
 - Implemented:
   - OAuth 2.0 client credentials token acquisition
   - `CreatePost`
+  - `GetPosts`
+  - `DeletePost`
 
 - Proto-confirmed but not yet wrapped in handwritten public API:
-  - `DeletePost`
   - `GetUsers`
-  - `GetPosts`
   - `GetCommunities`
   - `InitiatePostMediaUpload`
   - `GetPostMediaStatus`
@@ -149,7 +150,7 @@
 ## Future integration steps
 
 1. Add media upload helper and direct upload flow.
-2. Add delete post, get users, and DM wrappers.
+2. Add get users and DM wrappers.
 3. Add streaming client support using the same token provider and channel.
 4. Expand response and domain models once actual RPC schemas are available.
 5. Consider a dedicated internal layer for generated-type to public-model mapping.
