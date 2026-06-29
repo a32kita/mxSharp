@@ -9,6 +9,8 @@ internal static class Program
     {
         Console.WriteLine("mxSharp Demo");
         Console.WriteLine("Enter mixi2 connection settings.");
+        Console.WriteLine("This demo currently supports posting one text post.");
+        Console.WriteLine("Listing your latest personal posts is not available from the currently integrated proto surface.");
 
         var tokenEndpoint = ReadRequired("OAuth Token URL");
         var grpcEndpoint = ReadRequired("gRPC API Address (e.g. https://example:443)");
@@ -33,7 +35,13 @@ internal static class Program
             var token = await client.OAuth.GetClientCredentialsTokenAsync().ConfigureAwait(false);
             Console.WriteLine($"Authenticated. Token type: {token.TokenType}, expires at: {token.ExpiresAt:yyyy/MM/dd HH:mm:ss zzz}");
 
-            var text = $"Test: {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}";
+            Console.WriteLine();
+            Console.WriteLine("Ready to create a post.");
+            var inputText = ReadOptional("Post text (leave empty to use timestamp test text)");
+            var text = string.IsNullOrWhiteSpace(inputText)
+                ? $"Test: {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}"
+                : inputText;
+
             var response = await client.Posts.CreatePostAsync(new CreatePostRequest
             {
                 Text = text,

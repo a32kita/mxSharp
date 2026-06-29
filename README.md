@@ -77,7 +77,10 @@ catch (MixiException ex)
 2. Prompts for gRPC API endpoint
 3. Prompts for client credentials
 4. Requests an access token
-5. Attempts to post `Test: yyyy/MM/dd HH:mm:ss.fff`
+5. Prompts for post text and sends one post
+
+> Note
+> The currently integrated proto surface does not expose a direct "list my latest personal posts" API. The demo therefore only supports creating a post at this time.
 
 Run:
 
