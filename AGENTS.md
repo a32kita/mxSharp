@@ -88,6 +88,13 @@
   - Prompts for OAuth token URL, gRPC endpoint, client ID, client secret, and optional scope
   - Requests token and calls `CreatePostAsync`
 
+## Endpoint handling note
+
+- As of 2026-06-29, treat the mixi2 OAuth token endpoint and gRPC/API address as configurable values that must be confirmed in the mixi2 Developer Portal.
+- Do not assume these endpoints are permanently fixed global constants, even if the currently announced values look stable.
+- This repository intentionally keeps endpoint handling configurable because public developer access appears to still be in a trial/early phase.
+- In practice the endpoints may become effectively fixed in the future, but current implementation and documentation should continue to direct users to confirm the latest values in the Developer Portal.
+
 ## Error handling rule
 
 - API-originated failures must throw `MixiException`
